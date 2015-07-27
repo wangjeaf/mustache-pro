@@ -6,8 +6,8 @@ Make mustache.js be easier to use by developers.
 
 - {{#if(a==1)}} blabla {{/if(a==1)}}
 - {{if(a!=1)}} blabla {{/if(a!=1)}}
-- {{a | filter1 | filter2}}
-- {{render_a}} if register render
+- {{value | filter1 | filter2}} 
+- {{render_value}} (if register render)
 - {{#include-sub-tmpl}}
 
 ## API
