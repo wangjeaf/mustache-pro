@@ -3,6 +3,36 @@ test('APIs', function() {
     equal(typeof Mustache.registerFilter, 'function');
 })
 
+test('__first__/__last__/__middle__', function() {
+    var tmpl = '{{#list}}{{#__first__}}first{{a}} {{/__first__}}{{#__middle__}}middle{{a}} {{/__middle__}}{{#__last__}}last{{a}}{{/__last__}}{{/list}}';
+    var data = {
+        list: [{
+            a: 1
+        },{
+            a: 2
+        },{
+            a: 3
+        }]
+    };
+    var html = render(tmpl, data);
+    equal(html, 'first1 middle2 last3');
+})
+
+test('__index__', function() {
+    var tmpl = '{{#list}}{{__index__}}{{#if(__index__==1)}}find1{{/if(__index__==1)}}{{/list}}';
+    var data = {
+        list: [{
+            a: 1
+        },{
+            a: 2
+        },{
+            a: 3
+        }]
+    };
+    var html = render(tmpl, data);
+    equal(html, '01find12');
+})
+
 test('Renderer', function() {
     Mustache.registerRenderer({
         list: {
