@@ -4,12 +4,12 @@ Make mustache.js be easier to use by developers.
 
 ## Supports
 
-- __first__/__middle__/__last__/__index__ in Array
-- {{#if(a==1)}} blabla {{/if(a==1)}}
-- {{if(a!=1)}} blabla {{/if(a!=1)}}
-- {{value | filter1 | filter2}} 
-- {{render_value}} (if register render)
-- {{#include-sub-tmpl}}
+- `array index`: first/last/index of Array
+- `if` {{#if(a==1)}} blabla {{/if(a==1)}}
+- `if` {{if(a!=1)}} blabla {{/if(a!=1)}}
+- `filter` {{value | filter1 | filter2}} 
+- `render` {{render_value}} (if register render)
+- `include` {{#include-sub-tmpl}}
 
 ## API
 
@@ -66,7 +66,7 @@ Mustache.registerRenderer({
   }
 });
 
-var html = render($(tmpl, {
+var html = render(tmpl, {
   a: 1, 
   b: 2,
   list: [
@@ -75,7 +75,6 @@ var html = render($(tmpl, {
     {a:1}]
   }
 ); 
-
 ```
 
 result:
