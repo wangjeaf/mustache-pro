@@ -1,6 +1,6 @@
 # Mustache.js+
 
-Make mustache.js easier to use.
+Make mustache.js be easier to use by developers.
 
 ## Supports
 
