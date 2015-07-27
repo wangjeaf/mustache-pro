@@ -24,13 +24,13 @@ tmpl:
 ```html
 <div>
     {{#if(a==1)}}
-      <div>if判断，ok</div>
+      <div>if, ok</div>
     {{/if(a==1)}}
     {{#if(a!=1)}}
-      <div>if!判断，ok</div>
+      <div>if!, ok</div>
     {{/if(a!=1)}}
     {{#if(b!=1)}}
-      <div>if!判断，ok</div>
+      <div>if!, ok</div>
     {{/if(b!=1)}}
     <table border=1>
     <thead>
@@ -81,8 +81,8 @@ result:
 
 ```html
 <div>
-    <div>if判断，ok</div>
-    <div>if!判断，ok</div>
+    <div>if, ok</div>
+    <div>if!, ok</div>
     <table border="1">
     <thead>
         <tr>
