@@ -12,7 +12,13 @@ module.exports = function(grunt) {
                     '<%= grunt.template.today("yyyy-mm-dd") %> */',
             },
             main: {
-                src: ['lib/mustache.js', 'src/ext.js', 'src/filters.js'],
+                src: [
+                    'lib/mustache-start.js', 
+                    'src/ext.js', 
+                    'src/filters.js',
+                    'src/renderers.js',
+                    'lib/mustache-end.js'
+                ],
                 dest: 'dist/mustache-pro.js'
             }
         },

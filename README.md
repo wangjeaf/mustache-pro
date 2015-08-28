@@ -4,18 +4,23 @@ Make mustache.js be easier to use by developers.
 
 ## Supports
 
-- `array index`: first/last/index of Array
-- `if` {{#if(a==1)}} blabla {{/if(a==1)}}
+- `array index`: first/last/index/middle of Array
+- `if` {{#if(a==1||b==3&&c==3)}} blabla {{/if(a==1||b==3&&c==3)}}
 - `if` {{if(a!=1)}} blabla {{/if(a!=1)}}
-- `filter` {{value | filter1 | filter2}} 
+- `filter` {{value | filter1 | filter2(3)}} 
 - `render` {{render_value}} (if register render)
 - `include` {{#include-sub-tmpl}}
+- `define sub tmpl` {{#sub-tmpl-id}}{{/sub-tmpl-id}}
 
 ## API
 
 - Mustache.registerRender(obj)
 - Mustache.registerFilter(obj)
-- global.render(tmpl, data)
+- Mustache.to_html(tmpl, data)
+
+## Tests
+
+refs to `test` dir.
 
 ## Demo
 

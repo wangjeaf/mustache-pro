@@ -1,0 +1,1 @@
+module.exports = require('./dist/mustache-pro.js')

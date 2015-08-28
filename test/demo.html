@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mustache-pro</title>
+</head>
+<body>
+  <script type="text/javascript" src="../dist/mustache-pro.js"></script>
+  <script type="text/javascript">
+  var msg = Mustache.to_html('{{a}} {{#if(a==1||b==2&&c==3||d==4)}}321{{/if(a==1||b==2&&c==3||d==4)}}', 
+  {
+    a: '1',
+    b: 2,
+    c: 3,
+    d: 4
+  });
+  console.log(msg);
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mustache-pro</title>
+  <link rel="stylesheet" href="./qunit/qunit.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script type="text/javascript" src="../dist/mustache-pro.js"></script>
+  <script src="./qunit/qunit.js"></script>
+  <script type="text/javascript" src="./lib/jquery.js"></script>
+  <script type="text/javascript">
+    $.render = Mustache.to_html;
+    $.heredoc = function(fn) {
+      return fn.toString().replace(/^[^\/]+\/\*!?/, "").replace(/\*\/[^\/]+$/, "").replace(/^[\s\xA0]+/, "").replace(/[\s\xA0]+$/, "");
+    }
+  </script>
+  <script type="text/javascript" src="./cases/array_index.js"></script>
+  <script type="text/javascript" src="./cases/if.js"></script>
+  <script type="text/javascript" src="./cases/filter.js"></script>
+  <script type="text/javascript" src="./cases/renderer.js"></script>
+  <script type="text/javascript" src="./cases/subtmpl.js"></script>
+  <script type="text/javascript" src="./cases/together.js"></script>
+</body>
+</html>
