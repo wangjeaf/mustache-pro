@@ -24,14 +24,14 @@ Make mustache.js be easier to use by developers.
 
 tmpl
 
-```
+```html
 {{#if(a==1&&b==2||c!=3)}}123{{/if(a==1&&b==2||c!=3)}}
 {{#if(a==1)}}a is 1{{/if(a==1)}}
 ```
 
 data
 
-```
+```javascript
 {
   a: 1,
   b: 2,
@@ -40,7 +40,7 @@ data
 ```
 result: 
 
-```
+```html
 123
 a is 1
 ```
@@ -49,7 +49,7 @@ a is 1
 
 tmpl
 
-```
+```html
 {{#list}}
 	{{__index__}}({{a}})
 	{{^__last__}}、{{/__last__}}
@@ -58,7 +58,7 @@ tmpl
 
 data
 
-```
+```javascript
 {
   list: [{
      a: 'value1'
@@ -70,7 +70,7 @@ data
 
 result: 
 
-```
+```html
 0(value1)、1(value2)
 ```
 
@@ -78,7 +78,7 @@ result:
 
 register renderer:
 
-```
+```javascript
 var mapper = {
   "a": 'this is A',
   "b": 'this is B'
@@ -95,14 +95,15 @@ Mustache.registerRenderer({
 
 tmpl:
 
-```
+```html
 {{#list}}
   {{list_desc}}'
 {{/list}}
 ```
 
 data:
-```
+
+```javascript
 {
   list: [{
     name: 'a'
@@ -115,7 +116,7 @@ data:
 
 result:
 
-```
+```html
 this is A
 this is B
 ```
@@ -125,7 +126,7 @@ this is B
 
 register filter:
 
-```
+```javascript
 var mapper = {
   "a": 'this is A',
   "b": 'this is B'
@@ -144,7 +145,7 @@ Mustache.registerFilter({
 
 tmpl:
 
-```
+```html
 {{#list}}
   {{name | desc | omg}}'
 {{/list}}
@@ -152,7 +153,7 @@ tmpl:
 
 data:
 
-```
+```javascript
 {
   list: [{
     name: 'a'
@@ -165,7 +166,7 @@ data:
 
 result:
 
-```
+```html
 oh my god! this is A
 oh my god! this is B
 ```
@@ -175,7 +176,7 @@ oh my god! this is B
 
 tmpl: 
 
-```
+```html
 {{#list}}
     {{#if(a==1)}}
         {{#include-list}}
@@ -189,7 +190,7 @@ tmpl:
 
 data: 
 
-```
+```javascript
 {
   list: [{
     a: 1
@@ -199,7 +200,7 @@ data:
 
 result: 
 
-```
+```html
 1
 ```
 
