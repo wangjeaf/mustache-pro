@@ -18,106 +18,187 @@ Make mustache.js be easier to use by developers.
 - Mustache.registerFilter(obj)
 - Mustache.to_html(tmpl, data)
 
-## Tests
-
-refs to `test` dir.
-
 ## Demo
 
-tmpl: 
+### if
 
-```html
-<div>
-    {{#if(a==1)}}
-      <div>if, ok</div>
-    {{/if(a==1)}}
-    {{#if(a!=1)}}
-      <div>if!, ok</div>
-    {{/if(a!=1)}}
-    {{#if(b!=1)}}
-      <div>if!, ok</div>
-    {{/if(b!=1)}}
-    <table border=1>
-    <thead>
-        <th>first/last</th>
-        <th>renderer</th>
-        <th>filter</th>
-    </thead>
-    {{#list}}
-    <tr>
-      <td>
-        {{#__first__}}
-          first
-        {{/__first__}}
-        
-        {{#__last__}}
-          last
-        {{/__last__}}
-      </td>
-      <td>{{list_showA}}</td>
-      <td>by filter: {{a | number(2) | thousand | rmb}}</td>
-    </tr>
-    {{/list}}
-    </table>
-</div>
+tmpl
+
+```
+{{#if(a==1&&b==2||c!=3)}}123{{/if(a==1&&b==2||c!=3)}}
+{{#if(a==1)}}a is 1{{/if(a==1)}}
 ```
 
-```js
+data
+
+```
+{
+  a: 1,
+  b: 2,
+  c: 4
+}
+```
+result: 
+
+```
+123
+a is 1
+```
+
+### array_index
+
+tmpl
+
+```
+{{#list}}
+	{{__index__}}({{a}})
+	{{^__last__}}、{{/__last__}}
+{{/list}}
+```
+
+data
+
+```
+{
+  list: [{
+     a: 'value1'
+  }, {
+     a: 'value2'
+  }]
+}
+```
+
+result: 
+
+```
+0(value1)、1(value2)
+```
+
+## renderer
+
+register renderer:
+
+```
+var mapper = {
+  "a": 'this is A',
+  "b": 'this is B'
+};
+
 Mustache.registerRenderer({
   list: {
-    showA: function() {
-      return 'by render: ' + this.a
+    desc: function() {
+      return mapper[this.name]
     }
   }
 });
+```
 
-var html = render(tmpl, {
-  a: 1, 
-  b: 2,
-  list: [
-    {a:123213},
-    {a:11111},
-    {a:1}]
-  }
-); 
+tmpl:
+
+```
+{{#list}}
+  {{list_desc}}'
+{{/list}}
+```
+
+data:
+```
+{
+  list: [{
+    name: 'a'
+  }, {
+    name: 'b'
+  }]
+}
+
 ```
 
 result:
 
-```html
-<div>
-    <div>if, ok</div>
-    <div>if!, ok</div>
-    <table border="1">
-    <thead>
-        <tr>
-            <th>first/last</th>
-            <th>renderer</th>
-            <th>filter</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-              first
-          </td>
-          <td>by render: 123213</td>
-          <td>by filter: ￥123,213.00</td>
-        </tr>
-        <tr>
-          <td>
-          </td>
-          <td>by render: 11111</td>
-          <td>by filter: ￥11,111.00</td>
-        </tr>
-        <tr>
-          <td>
-              last
-          </td>
-          <td>by render: 1</td>
-          <td>by filter: ￥1.00</td>
-        </tr>
-    </tbody>
-    </table>
-</div>
 ```
+this is A
+this is B
+```
+
+## filter
+
+
+register filter:
+
+```
+var mapper = {
+  "a": 'this is A',
+  "b": 'this is B'
+};
+
+Mustache.registerFilter({
+  desc: function(name) {
+    return mapper[name]
+  }
+});
+```
+
+tmpl:
+
+```
+{{#list}}
+  {{name | desc}}'
+{{/list}}
+```
+
+data:
+
+```
+{
+  list: [{
+    name: 'a'
+  }, {
+    name: 'b'
+  }]
+}
+
+```
+
+result:
+
+```
+this is A
+this is B
+```
+
+
+## sub tmpl
+
+tmpl: 
+
+```
+{{#list}}
+    {{#if(a==1)}}
+        {{#include-list}}
+    {{/if(a==1)}}
+{{/list}}
+
+{{#sub-tmpl-list}}
+    {{a}}
+{{/sub-tmpl-list}}
+```
+
+data: 
+
+```
+{
+  list: [{
+    a: 1
+  }]
+}
+```
+
+result: 
+
+```
+1
+```
+
+## more...
+
+in `/test/cases` dir
