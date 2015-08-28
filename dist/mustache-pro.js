@@ -1,4 +1,4 @@
-/*! mustache-pro - v0.1.2 - 2015-08-28 *//*!
+/*! mustache-pro - v0.2.3 - 2015-08-28 *//*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
  */
@@ -963,7 +963,7 @@ function getSubTmpls(tmpl) {
 }
 
 var oldMustacheRender = Mustache.to_html;
-Mustache.to_html = function(tmpl, data) {
+Mustache.to_html = function(tmpl, data, partials, send) {
     data = data || {};
     if (typeof(data) === "object") {
         findArray(data, 0);

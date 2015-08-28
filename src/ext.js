@@ -351,7 +351,7 @@ function getSubTmpls(tmpl) {
 }
 
 var oldMustacheRender = Mustache.to_html;
-Mustache.to_html = function(tmpl, data) {
+Mustache.to_html = function(tmpl, data, partials, send) {
     data = data || {};
     if (typeof(data) === "object") {
         findArray(data, 0);
