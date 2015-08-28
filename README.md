@@ -134,7 +134,11 @@ var mapper = {
 Mustache.registerFilter({
   desc: function(name) {
     return mapper[name]
+  },
+  omg: function(value) {
+    return 'oh my god! ' + value
   }
+}
 });
 ```
 
@@ -142,7 +146,7 @@ tmpl:
 
 ```
 {{#list}}
-  {{name | desc}}'
+  {{name | desc | omg}}'
 {{/list}}
 ```
 
@@ -162,8 +166,8 @@ data:
 result:
 
 ```
-this is A
-this is B
+oh my god! this is A
+oh my god! this is B
 ```
 
 
