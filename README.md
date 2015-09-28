@@ -6,7 +6,7 @@ Make mustache.js be easier to use by developers.
 
 - `array index`: first/last/index/middle of Array
 - `if` {{#if(a==1||b==3&&c==3)}} blabla {{/if(a==1||b==3&&c==3)}}
-- `if` {{if(a!=1)}} blabla {{/if(a!=1)}}
+- `if` {{#if(a!=1)}} blabla {{/if(a!=1)}}
 - `filter` {{value | filter1 | filter2(3)}} 
 - `render` {{render_value}} (if register render)
 - `include` {{#include-sub-tmpl}}
@@ -38,7 +38,7 @@ data
   c: 4
 }
 ```
-result: 
+==>
 
 ```html
 123
@@ -68,7 +68,7 @@ data
 }
 ```
 
-result: 
+==>
 
 ```html
 0(value1)、1(value2)
@@ -114,7 +114,7 @@ data:
 
 ```
 
-result:
+==>
 
 ```html
 this is A
@@ -164,7 +164,7 @@ data:
 
 ```
 
-result:
+==>
 
 ```html
 oh my god! this is A
@@ -198,7 +198,7 @@ data:
 }
 ```
 
-result: 
+==>
 
 ```html
 1
