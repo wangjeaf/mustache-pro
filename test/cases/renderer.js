@@ -45,4 +45,28 @@ test('self-define renderer - multi', function() {
             b: 'fdb'
         }]
     }), 'lalalafdalalalafdb');
+});
+
+
+test('renderer define override', function() {
+  Mustache.registerRenderer({
+    list: {
+      a: function() {
+        return this.a;
+      }
+    }
+  });
+
+  Mustache.registerRenderer({
+    list: {
+      b: function() {
+        return this.b;
+      }
+    }
+  });
+
+  equal($.render('{{list_a}}-{{list_b}}', {
+      a: 'a',
+      b: 'b'
+  }), 'a-b');
 })

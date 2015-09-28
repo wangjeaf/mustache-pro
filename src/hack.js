@@ -7,9 +7,7 @@ Mustache.to_html = function(tmpl, data, partials, send) {
         addArrayIndexSupport(data, 0);
     }
 
-    tmpl = getInjectedSubTmpls(tmpl);
-    
-    tmpl = getScriptSubTmpls(tmpl);
+    tmpl = addSubTmplSupport(tmpl);
 
     addRendererSupport(data, tmpl);
     addIfSupport(tmpl, data);

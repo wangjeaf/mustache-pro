@@ -1,27 +1,35 @@
+var addRendererSupport = (function() {
 
-Mustache.__cache__.renderers = {};
-Mustache.registerRenderer = function(obj) {
-    extend(Mustache.__cache__.renderers, obj);
-};
+    var renderers = Mustache.__cache__.renderers = {};
 
-function addRendererSupport(data, tmpl) {
-    var rr = Mustache.__cache__.renderers;
-    if (!rr) {
-        return
+    function buildRendererFn(data, name, fn) {
+        data[name] = function() {
+            return fn.call(this, this);
+        };
     }
-    for (var mcName in rr) {
-        for (var wrapperName in rr[mcName]) {
-            (function() {
-                var mn = mcName,
-                    wn = wrapperName;
-                var fn = rr[mn][wn];
-                var name = mn + "_" + wn;
+
+    function addRendererSupport(data, tmpl) {
+        for (var groupName in renderers) {
+            var group = renderers[groupName];
+            for (var rendererName in group) {
+                var fn = group[rendererName];
+                var name = groupName + "_" + rendererName;
                 if (tmpl.indexOf(name) != -1 && !(name in data)) {
-                    data[name] = function() {
-                        return fn.call(this, self);
-                    };
+                    buildRendererFn(data, name, fn)
                 }
-            })();
+            }
         }
     }
-}
+
+    Mustache.registerRenderer = function(obj) {
+        for(var prop in obj) {
+            // 防止覆盖
+            // list: a / list: b
+            renderers[prop] = renderers[prop] || {};
+            extend(renderers[prop], obj[prop]);
+        }
+    };
+
+    return addRendererSupport;
+    
+})();
