@@ -57,6 +57,7 @@ test('renderer define override', function() {
     }
   });
 
+  // list.a / list.b 同时存在
   Mustache.registerRenderer({
     list: {
       b: function() {
@@ -65,8 +66,17 @@ test('renderer define override', function() {
     }
   });
 
+  // 覆盖 list.b
+  Mustache.registerRenderer({
+    list: {
+      b: function() {
+        return this.b + '2';
+      }
+    }
+  });
+
   equal($.render('{{list_a}}-{{list_b}}', {
       a: 'a',
       b: 'b'
-  }), 'a-b');
+  }), 'a-b2');
 })
