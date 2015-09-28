@@ -14,9 +14,18 @@ module.exports = function(grunt) {
             main: {
                 src: [
                     'lib/mustache-start.js', 
-                    'src/ext.js', 
+
+                    'src/utils.js',
+                    'src/support-if.js',
+                    'src/support-index.js',
+                    'src/support-renderer.js',
+                    'src/support-filter.js',
+                    'src/support-subtmpl.js',
+                    'src/hack.js', 
+                    
                     'src/filters.js',
                     'src/renderers.js',
+
                     'lib/mustache-end.js'
                 ],
                 dest: 'dist/mustache-pro.js'

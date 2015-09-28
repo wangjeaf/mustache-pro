@@ -62,7 +62,7 @@ test('basic - in list + if', function() {
         }]
     });
     equal($.trim(msg), 1);
-    equal($.trim(Mustache.subTmpls['list']), '{{a}}')
+    equal($.trim(Mustache.__cache__.subTmpls['list']), '{{a}}')
 })
 
 
@@ -98,7 +98,7 @@ test('basic - share sub tmpls between tmpl', function() {
         }]
     });
     equal($.trim(msg), 1);
-    equal($.trim(Mustache.subTmpls['list']), '{{a}}');
+    equal($.trim(Mustache.__cache__.subTmpls['list']), '{{a}}');
 
     var msg2 = $.render(tmpl2, {
         list: [{

@@ -2,11 +2,31 @@ Mustache.registerFilter({
     number: function(fixed) {
         fixed = fixed || 2;
         return function(value) {
-            return parseFloat(value).toFixed(fixed);
+          if (value == null) {
+            return '-';
+          }
+          var value = parseFloat(value);
+          if (isNaN(value)) {
+            return '-';
+          }
+          return value.toFixed(fixed);
         }
     },
     percent: function(value) {
         return value * 100 + '%'
+    },
+    floatPercent: function(fixed) {
+        fixed = fixed || 2;
+        return function(value) {
+          if (value == null) {
+            return '-';
+          }
+          var value = parseFloat(value);
+          if (isNaN(value)) {
+            return '-';
+          }
+          return (value * 100).toFixed(fixed) + '%';
+        }
     },
     rmb: function(value) {
         return "￥" + value;

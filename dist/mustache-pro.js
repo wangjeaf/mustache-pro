@@ -1,4 +1,4 @@
-/*! mustache-pro - v0.2.3 - 2015-08-28 *//*!
+/*! mustache-pro - v0.2.3 - 2015-09-28 *//*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
  */
@@ -627,7 +627,8 @@ var IF_REG = /\{{2,3}[\^#]?if\((.*?)\)\}{2,3}?/ig;
 var IF_CLEANER = /\{{2,3}[\^#]?if\((.*?)\)\}{2,3}?/i;
 var FN_NAME_AND_PARAM_REG = /([^(]+)\((.*)\)/;
 var QUOTE_REG = /^['"]|["']$/g;
-var SUBTMPLREG = /\{{2}#sub-tmpl-([^\}]+)\}{2}([\s\S]*?)\{{2}\/sub-tmpl(?:-\1)?\}{2}/gi;
+var INJECT_SUB_TMPL_REG = /\{{2}#sub-tmpl-([^\}]+)\}{2}([\s\S]*?)\{{2}\/sub-tmpl(?:-\1)?\}{2}/gi;
+var INCLUDE_SUB_TMPL_REG = /{{#include-(.+)}}/g;
 
 var MIRROR_FN = function(val) {
     return val;
@@ -654,20 +655,8 @@ function extend(dest, src) {
     }
 }
 
-function getSubTmplText(tmplId) {
-    if (typeof jQuery != 'undefined') {
-        return $('#' + tmplId).text();
-    } else {
-        var node = $(tmplId);
-        if (!node) {
-            return '';
-        }
-        var sub = node.innerText;
-        return sub;
-    }
-}
-
-function AddIfAndFilterSupport(template, data) {
+Mustache.__cache__ = Mustache.__cache__ || {};
+function addIfSupport(template, data) {
     var ifs = getIfConditions(template);
     var key = "";
     for (var i = 0; i < ifs.length; i++) {
@@ -678,39 +667,8 @@ function AddIfAndFilterSupport(template, data) {
             data[key] = buildRealIfFn(ifs[i]);
         }
     }
-
-    var filters = getFilters(template);
-    for (var i = 0; i < filters.length; i++) {
-        key = trim(filters[i]);
-        if (data[key]) {
-            continue;
-        } else {
-            data[key] = buildRealFilterFn(filters[i]);
-        }
-    }
 }
 
-function getFilters(template) {
-    var gx = template.match(FILTER_REG);
-    var ret = [];
-    if (gx) {
-        for (var i = 0; i < gx.length; i++) {
-            ret.push(gx[i].replace(FILTER_CLEANER, ''));
-        }
-    }
-    return ret;
-}
-
-function getIfConditions(template) {
-    var gx = template.match(IF_REG);
-    var ret = [];
-    if (gx) {
-        for (var i = 0; i < gx.length; i++) {
-            ret.push(gx[i].match(IF_CLEANER)[1]);
-        }
-    }
-    return ret;
-}
 
 // 扩展出来的if操作符，不支持 {{if(a.b.c==1)}} 的判断
 // 原生Mustache就会过滤掉这种if，不进入function
@@ -803,12 +761,111 @@ function getAtomResult(key, data) {
     return false;
 }
 
+
 function buildRealIfFn(key) {
     var realFn = function() {
         return parseOperations(key, this);
     };
     return realFn;
 }
+
+
+
+function getIfConditions(template) {
+    var gx = template.match(IF_REG);
+    var ret = [];
+    if (gx) {
+        for (var i = 0; i < gx.length; i++) {
+            ret.push(gx[i].match(IF_CLEANER)[1]);
+        }
+    }
+    return ret;
+}
+
+function addArrayIndexSupport(o, depth) {
+    var k, v;
+    for (k in o) {
+        v = o[k];
+        if (v instanceof Array) {
+            insertArrayIndexProps(v);
+        } else if (typeof(v) === "object" && depth < 5) {
+            addArrayIndexSupport(v, depth + 1);
+        }
+    }
+}
+
+function insertArrayIndexProps(v) {
+    for (var i = 0; i < v.length; i++) {
+        var o = v[i];
+        if (o !== null && typeof(o) === "object") {
+            if (i === 0) {
+                o.__first__ = true;
+            } else if (i === (v.length - 1)) {
+                o.__last__ = true;
+            } else {
+                o.__middle__ = true;
+            }
+            o.__index__ = i;
+        }
+    }
+}
+
+Mustache.__cache__.renderers = {};
+Mustache.registerRenderer = function(obj) {
+    extend(Mustache.__cache__.renderers, obj);
+};
+
+function addRendererSupport(data, tmpl) {
+    var rr = Mustache.__cache__.renderers;
+    if (!rr) {
+        return
+    }
+    for (var mcName in rr) {
+        for (var wrapperName in rr[mcName]) {
+            (function() {
+                var mn = mcName,
+                    wn = wrapperName;
+                var fn = rr[mn][wn];
+                var name = mn + "_" + wn;
+                if (tmpl.indexOf(name) != -1 && !(name in data)) {
+                    data[name] = function() {
+                        return fn.call(this, self);
+                    };
+                }
+            })();
+        }
+    }
+}
+
+Mustache.__cache__.filters = {};
+
+Mustache.registerFilter = function(obj) {
+    extend(Mustache.__cache__.filters, obj);
+};
+
+function addFilterSupport(template, data) {
+    var filters = getFilters(template);
+    for (var i = 0, l = filters.length; i < l; i++) {
+        key = trim(filters[i]);
+        if (data[key]) {
+            continue;
+        } else {
+            data[key] = buildRealFilterFn(filters[i]);
+        }
+    }
+}
+
+function getFilters(template) {
+    var gx = template.match(FILTER_REG);
+    var ret = [];
+    if (gx) {
+        for (var i = 0, l = gx.length; i < l; i++) {
+            ret.push(gx[i].replace(FILTER_CLEANER, ''));
+        }
+    }
+    return ret;
+}
+
 
 function getFilterResultData(value, fnName) {
     var originValue = value;
@@ -822,7 +879,7 @@ function getFilterResultData(value, fnName) {
             fnParams = fnParams.split(',');
         }
     }
-    var fn = Mustache.__filters__[fnName];
+    var fn = Mustache.__cache__.filters[fnName];
     if (!fn) {
         console.error('[Mustache] Filter:' + fnName + ' is not defined, please use Mustache.registerFilter(filters) to define it.');
         return value;
@@ -889,112 +946,97 @@ function buildRealFilterFn(key) {
     return realFn;
 }
 
-function findArray(o, depth) {
-    var k, v;
-    for (k in o) {
-        v = o[k];
-        if (v instanceof Array) {
-            addArrayIndex(v);
-        } else if (typeof(v) === "object" && depth < 5) {
-            findArray(v, depth + 1);
+
+Mustache.__cache__.subTmpls = {};
+
+function getSubTmplText(tmplId) {
+    if (typeof jQuery != 'undefined') {
+        return $('#' + tmplId).text();
+    } else {
+        var node = $(tmplId);
+        if (!node) {
+            return '';
         }
+        var sub = node.innerText;
+        return sub;
     }
 }
 
-function addArrayIndex(v) {
-    for (var i = 0; i < v.length; i++) {
-        var o = v[i];
-        if (o !== null && typeof(o) === "object") {
-            if (i === 0) {
-                o.__first__ = true;
-            } else if (i === (v.length - 1)) {
-                o.__last__ = true;
-            } else {
-                o.__middle__ = true;
-            }
-            o.__index__ = i;
-        }
-    }
-}
-
-Mustache.__filters__ = {};
-Mustache.registerFilter = function(obj) {
-    extend(Mustache.__filters__, obj);
-};
-
-Mustache.__renderers = {};
-Mustache.registerRenderer = function(obj) {
-    extend(Mustache.__renderers, obj);
-};
-
-function addRendererSupport(data, tmpl) {
-    var rr = Mustache.__renderers;
-    if (!rr) {
-        return
-    }
-    for (var mcName in rr) {
-        for (var wrapperName in rr[mcName]) {
-            (function() {
-                var mn = mcName,
-                    wn = wrapperName;
-                var fn = rr[mn][wn];
-                var name = mn + "_" + wn;
-                if (tmpl.indexOf(name) != -1 && !(name in data)) {
-                    data[name] = function() {
-                        return fn.call(this, self);
-                    };
-                }
-            })();
-        }
-    }
-}
-
-Mustache.subTmpls = {};
-
-function getSubTmpls(tmpl) {
+function getInjectedSubTmpls(tmpl) {
     if (!tmpl || typeof tmpl != 'string') {
         return tmpl;
     }
-    tmpl = tmpl.replace(SUBTMPLREG, function(match, key, content) {
-        Mustache.subTmpls[key] = content;
+    tmpl = tmpl.replace(INJECT_SUB_TMPL_REG, function(match, key, content) {
+        Mustache.__cache__.subTmpls[key] = content;
         return '';
     });
     return tmpl;
 }
 
-var oldMustacheRender = Mustache.to_html;
-Mustache.to_html = function(tmpl, data, partials, send) {
-    data = data || {};
-    if (typeof(data) === "object") {
-        findArray(data, 0);
-    }
-
-    tmpl = getSubTmpls(tmpl);
-
+function getScriptSubTmpls(tmpl) {
+    tmpl = tmpl || '';
     // 支持include子模板
-    tmpl = tmpl.replace(/{{#include-(.+)}}/g, function(a, tmplId) {
-        var tmpl = Mustache.subTmpls[tmplId];
+    tmpl = tmpl.replace(INCLUDE_SUB_TMPL_REG, function(a, tmplId) {
+        var tmpl = Mustache.__cache__.subTmpls[tmplId];
         if (tmpl) {
             return tmpl;
         }
         // 如果不是mx-tmpl形式的子节点，则找script标签
+        debugger;
         var sub = getSubTmplText(tmplId)
         return sub;
     });
+    return tmpl;
+}
+
+var oldMustacheRender = Mustache.to_html;
+
+Mustache.to_html = function(tmpl, data, partials, send) {
+    data = data || {};
+    if (typeof(data) === "object") {
+        addArrayIndexSupport(data, 0);
+    }
+
+    tmpl = getInjectedSubTmpls(tmpl);
+    
+    tmpl = getScriptSubTmpls(tmpl);
 
     addRendererSupport(data, tmpl);
-    AddIfAndFilterSupport(tmpl, data);
+    addIfSupport(tmpl, data);
+    addFilterSupport(tmpl, data);
+
     return oldMustacheRender.apply(Mustache, arguments);
 }
+
 Mustache.registerFilter({
     number: function(fixed) {
         fixed = fixed || 2;
         return function(value) {
-            return parseFloat(value).toFixed(fixed);
+          if (value == null) {
+            return '-';
+          }
+          var value = parseFloat(value);
+          if (isNaN(value)) {
+            return '-';
+          }
+          return value.toFixed(fixed);
         }
     },
     percent: function(value) {
         return value * 100 + '%'
+    },
+    floatPercent: function(fixed) {
+        fixed = fixed || 2;
+        return function(value) {
+          if (value == null) {
+            return '-';
+          }
+          var value = parseFloat(value);
+          if (isNaN(value)) {
+            return '-';
+          }
+          return (value * 100).toFixed(fixed) + '%';
+        }
     },
     rmb: function(value) {
         return "￥" + value;
