@@ -1,4 +1,4 @@
-/*! mustache-pro - v0.2.4 - 2015-09-28 *//*!
+/*! mustache-pro - v0.2.5 - 2015-09-28 *//*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
  */
@@ -1029,22 +1029,26 @@ var addSubTmplSupport = (function() {
     
 })();
 
-var oldMustacheRender = Mustache.to_html;
+(function() {
 
-Mustache.to_html = function(tmpl, data, partials, send) {
-    data = data || {};
-    if (typeof(data) === "object") {
-        addArrayIndexSupport(data, 0);
+    var oldMustacheRender = Mustache.to_html;
+
+    Mustache.to_html = function(tmpl, data, partials, send) {
+        data = data || {};
+        if (typeof(data) === "object") {
+            addArrayIndexSupport(data, 0);
+        }
+
+        tmpl = addSubTmplSupport(tmpl);
+
+        addRendererSupport(data, tmpl);
+        addIfSupport(tmpl, data);
+        addFilterSupport(tmpl, data);
+
+        return oldMustacheRender.apply(Mustache, arguments);
     }
 
-    tmpl = addSubTmplSupport(tmpl);
-
-    addRendererSupport(data, tmpl);
-    addIfSupport(tmpl, data);
-    addFilterSupport(tmpl, data);
-
-    return oldMustacheRender.apply(Mustache, arguments);
-}
+})();
 
 Mustache.registerFilter({
     number: function(fixed) {
